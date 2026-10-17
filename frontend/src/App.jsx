@@ -83,11 +83,13 @@ function App() {
 
       setResult(data)
     } catch (err) {
-      setError(
-        err.message?.toLowerCase().includes('fetch')
-          ? 'Cannot connect to the AI server. Check that FastAPI is running at http://127.0.0.1:8000 and CORS is configured.'
-          : err.message || 'Prediction failed. Please try again.'
-      )
+      
+setError(
+  err.message?.toLowerCase().includes('fetch')
+    ? 'Cannot connect to the AI server. Please check your internet connection, backend status, and CORS configuration.'
+    : err.message || 'Prediction failed. Please try again.'
+)
+
     } finally {
       setLoading(false)
     }
