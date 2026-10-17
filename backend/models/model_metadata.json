@@ -1,0 +1,18 @@
+{
+  "class_names": [
+    "Tomato_Bacterial_spot",
+    "Tomato_Early_blight",
+    "Tomato_Late_blight",
+    "Tomato_healthy"
+  ],
+  "image_size": [
+    160,
+    160
+  ],
+  "model_type": "MobileNetV2",
+  "training_images": 5300,
+  "validation_images": 1327,
+  "epochs_requested": 5,
+  "final_train_accuracy": 0.9786792397499084,
+  "final_val_accuracy": 0.9653353691101074
+}
