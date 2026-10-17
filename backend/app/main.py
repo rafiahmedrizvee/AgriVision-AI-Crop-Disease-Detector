@@ -14,23 +14,19 @@ app = FastAPI(
     version="0.2.0",
 )
 
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["http://localhost:5173"],
-#     allow_credentials=False,
-#     allow_methods=["GET", "POST"],
-#     allow_headers=["*"],
-# )
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "https://agri-vision-ai.netlify.app",
     ],
     allow_credentials=False,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
+
 
 
 @app.get("/")
