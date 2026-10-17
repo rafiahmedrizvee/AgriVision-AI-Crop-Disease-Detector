@@ -1,13 +1,14 @@
 
-# Python virtual environment
+# Python virtual environments
 .venv/
+.venv-prod/
 venv/
 
-# Python cache files
+# Python cache
 __pycache__/
 *.py[cod]
 
-# Local environment variables and secrets
+# Environment variables and secrets
 .env
 .env.*
 
@@ -20,3 +21,12 @@ Thumbs.db
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Node dependencies
+node_modules/
+
+# Build outputs
+dist/
+
+# Raw PlantVillage dataset (keep local, do not push to GitHub)
+ml/data/raw/PlantVillage/
