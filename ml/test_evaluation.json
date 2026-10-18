@@ -1,0 +1,76 @@
+{
+  "model": "tomato_disease_model.keras",
+  "test_images": 996,
+  "class_names": [
+    "Tomato_Bacterial_spot",
+    "Tomato_Early_blight",
+    "Tomato_Late_blight",
+    "Tomato_healthy"
+  ],
+  "test_accuracy": 0.9658634538152611,
+  "classification_report": {
+    "Tomato_Bacterial_spot": {
+      "precision": 0.978125,
+      "recall": 0.978125,
+      "f1-score": 0.978125,
+      "support": 320.0
+    },
+    "Tomato_Early_blight": {
+      "precision": 0.9183673469387755,
+      "recall": 0.9,
+      "f1-score": 0.9090909090909091,
+      "support": 150.0
+    },
+    "Tomato_Late_blight": {
+      "precision": 0.9518900343642611,
+      "recall": 0.9651567944250871,
+      "f1-score": 0.9584775086505191,
+      "support": 287.0
+    },
+    "Tomato_healthy": {
+      "precision": 0.9957983193277311,
+      "recall": 0.9916317991631799,
+      "f1-score": 0.9937106918238994,
+      "support": 239.0
+    },
+    "accuracy": 0.9658634538152611,
+    "macro avg": {
+      "precision": 0.9610451751576919,
+      "recall": 0.9587283983970668,
+      "f1-score": 0.9598510273913319,
+      "support": 996.0
+    },
+    "weighted avg": {
+      "precision": 0.9658065664886415,
+      "recall": 0.9658634538152611,
+      "f1-score": 0.9658067637472363,
+      "support": 996.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      313,
+      4,
+      3,
+      0
+    ],
+    [
+      5,
+      135,
+      10,
+      0
+    ],
+    [
+      2,
+      7,
+      277,
+      1
+    ],
+    [
+      0,
+      1,
+      1,
+      237
+    ]
+  ]
+}

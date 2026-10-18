@@ -1,11 +1,11 @@
 
 from pathlib import Path
 import json
+
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 
-# Project paths
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = PROJECT_ROOT / "ml" / "data" / "processed" / "tomato"
 MODEL_DIR = PROJECT_ROOT / "backend" / "models"
@@ -17,13 +17,24 @@ SEED = 42
 
 
 def main():
-    if not DATA_DIR.exists():
-        raise FileNotFoundError(f"Dataset folder not found: {DATA_DIR}")
+    train_dir = DATA_DIR / "train"
+    val_dir = DATA_DIR / "val"
+
+    if not train_dir.is_dir() or not val_dir.is_dir():
+        raise FileNotFoundError(
+            "Train or validation folder is missing. "
+            f"Expected: {train_dir} and {val_dir}"
+        )
+
+    if not (DATA_DIR / "test").is_dir():
+        raise FileNotFoundError(
+            f"Test folder not found: {DATA_DIR / 'test'}"
+        )
 
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
     train_ds = keras.utils.image_dataset_from_directory(
-        DATA_DIR / "train",
+        train_dir,
         image_size=IMG_SIZE,
         batch_size=BATCH_SIZE,
         label_mode="int",
@@ -32,7 +43,7 @@ def main():
     )
 
     val_ds = keras.utils.image_dataset_from_directory(
-        DATA_DIR / "val",
+        val_dir,
         image_size=IMG_SIZE,
         batch_size=BATCH_SIZE,
         label_mode="int",
@@ -42,16 +53,42 @@ def main():
     class_names = train_ds.class_names
 
     if class_names != val_ds.class_names:
-        raise ValueError("Training and validation classes do not match.")
+        raise ValueError(
+            "Training and validation classes do not match."
+        )
+
+    if len(class_names) != 4:
+        raise ValueError(
+            f"Expected 4 classes, found {len(class_names)}: {class_names}"
+        )
+
+    train_count = sum(
+        1 for class_name in class_names
+        for path in (train_dir / class_name).iterdir()
+        if path.is_file()
+    )
+
+    val_count = sum(
+        1 for class_name in class_names
+        for path in (val_dir / class_name).iterdir()
+        if path.is_file()
+    )
+
+    test_count = sum(
+        1 for class_name in class_names
+        for path in (DATA_DIR / "test" / class_name).iterdir()
+        if path.is_file()
+    )
 
     print("\nClasses:", class_names)
     print("TensorFlow:", tf.__version__)
+    print(f"Train images: {train_count}")
+    print(f"Validation images: {val_count}")
+    print(f"Test images reserved for final evaluation: {test_count}")
 
-    # Improve input pipeline performance.
     train_ds = train_ds.prefetch(tf.data.AUTOTUNE)
     val_ds = val_ds.prefetch(tf.data.AUTOTUNE)
 
-    # Pretrained image feature extractor.
     base_model = keras.applications.MobileNetV2(
         input_shape=(*IMG_SIZE, 3),
         include_top=False,
@@ -60,13 +97,16 @@ def main():
     base_model.trainable = False
 
     inputs = keras.Input(shape=(*IMG_SIZE, 3))
+
     x = layers.Rescaling(
         scale=1.0 / 127.5,
         offset=-1,
     )(inputs)
+
     x = base_model(x, training=False)
     x = layers.GlobalAveragePooling2D()(x)
     x = layers.Dropout(0.2)(x)
+
     outputs = layers.Dense(
         len(class_names),
         activation="softmax",
@@ -82,6 +122,9 @@ def main():
 
     model.summary()
 
+    model_path = MODEL_DIR / "tomato_disease_model.keras"
+    best_model_path = MODEL_DIR / "tomato_disease_best.keras"
+
     callbacks = [
         keras.callbacks.EarlyStopping(
             monitor="val_loss",
@@ -89,7 +132,7 @@ def main():
             restore_best_weights=True,
         ),
         keras.callbacks.ModelCheckpoint(
-            filepath=str(MODEL_DIR / "tomato_disease_model.keras"),
+            filepath=str(best_model_path),
             monitor="val_loss",
             save_best_only=True,
         ),
@@ -102,26 +145,50 @@ def main():
         callbacks=callbacks,
     )
 
-    model_path = MODEL_DIR / "tomato_disease_model.keras"
-    model.save(model_path)
+    # Save the best validation model, not necessarily the final epoch.
+    best_model = keras.models.load_model(best_model_path)
+    best_model.save(model_path)
+
+    best_epoch = (
+        int(min(
+            range(len(history.history["val_loss"])),
+            key=lambda i: history.history["val_loss"][i],
+        )) + 1
+    )
 
     metadata = {
         "class_names": class_names,
         "image_size": list(IMG_SIZE),
         "model_type": "MobileNetV2",
-        "training_images": 5300,
-        "validation_images": 1327,
+        "training_images": train_count,
+        "validation_images": val_count,
+        "test_images": test_count,
         "epochs_requested": EPOCHS,
+        "epochs_completed": len(history.history["loss"]),
+        "best_epoch": best_epoch,
+        "best_val_accuracy": float(
+            history.history["val_accuracy"][best_epoch - 1]
+        ),
+        "best_val_loss": float(
+            history.history["val_loss"][best_epoch - 1]
+        ),
         "final_train_accuracy": float(history.history["accuracy"][-1]),
         "final_val_accuracy": float(history.history["val_accuracy"][-1]),
+        "test_evaluated": False,
+        "random_seed": SEED,
     }
 
-    with open(MODEL_DIR / "model_metadata.json", "w", encoding="utf-8") as file:
+    metadata_path = MODEL_DIR / "model_metadata.json"
+
+    with open(metadata_path, "w", encoding="utf-8") as file:
         json.dump(metadata, file, indent=2)
 
     print("\nTraining finished!")
+    print(f"Best epoch: {best_epoch}")
+    print(f"Best validation accuracy: {metadata['best_val_accuracy']:.4f}")
     print(f"Model saved at: {model_path}")
-    print(f"Metadata saved at: {MODEL_DIR / 'model_metadata.json'}")
+    print(f"Metadata saved at: {metadata_path}")
+    print("The test dataset has NOT been used for training or evaluation yet.")
 
 
 if __name__ == "__main__":

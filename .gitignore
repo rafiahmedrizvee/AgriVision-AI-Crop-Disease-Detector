@@ -12,7 +12,7 @@ __pycache__/
 .env
 .env.*
 
-# Editor and operating system files
+# Editors and operating system
 .vscode/
 .DS_Store
 Thumbs.db
@@ -22,11 +22,15 @@ Thumbs.db
 .coverage
 htmlcov/
 
-# Node dependencies
+# Node dependencies and build output
 node_modules/
-
-# Build outputs
 dist/
 
-# Raw PlantVillage dataset (keep local, do not push to GitHub)
-ml/data/raw/PlantVillage/
+# Datasets — keep locally, do not push to GitHub
+ml/data/raw/
+ml/data/processed/
+ml/data/processed/tomato_backup/
+ml/data/processed/tomato_old/
+
+# Model training checkpoints
+backend/models/tomato_disease_best.keras

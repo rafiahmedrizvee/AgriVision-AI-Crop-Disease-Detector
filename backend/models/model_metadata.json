@@ -10,9 +10,18 @@
     160
   ],
   "model_type": "MobileNetV2",
-  "training_images": 5300,
-  "validation_images": 1327,
+  "training_images": 4636,
+  "validation_images": 995,
+  "test_images": 996,
   "epochs_requested": 5,
-  "final_train_accuracy": 0.9786792397499084,
-  "final_val_accuracy": 0.9653353691101074
+  "epochs_completed": 5,
+  "best_epoch": 5,
+  "best_val_accuracy": 0.9618090391159058,
+  "best_val_loss": 0.12480153888463974,
+  "final_train_accuracy": 0.9801552891731262,
+  "final_val_accuracy": 0.9618090391159058,
+  "test_evaluated": true,
+  "random_seed": 42,
+  "test_accuracy": 0.9658634538152611,
+  "test_results_file": "ml/test_evaluation.json"
 }
