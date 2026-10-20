@@ -8,9 +8,9 @@ The project combines machine learning, backend API development, and modern front
 
 ## 🚀 Live Demo
 
-- **Live Application:** [Visit AgriVision AI](YOUR_NETLIFY_URL)
-- **Backend API:** [FastAPI Backend](YOUR_RENDER_URL)
-- **API Documentation:** [Explore API Docs](YOUR_RENDER_URL/docs)
+- **Live Application:** [Visit AgriVision AI](https://agri-vision-ai.netlify.app/)
+- **Backend API:** [FastAPI Backend](https://agrivision-ai-crop-disease-detector.onrender.com)
+- **API Documentation:** [Explore API Docs](https://agrivision-ai-crop-disease-detector.onrender.com/docs)
 
 > Replace the placeholder URLs with your actual Netlify and Render deployment URLs.
 
